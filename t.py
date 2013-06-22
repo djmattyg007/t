@@ -23,14 +23,13 @@ class UnknownPrefix(Exception):
 		super(UnknownPrefix, self).__init__()
 		self.prefix = prefix
 
-
 def _hash(text):
 	"""Return a hash of the given text combined with a timestamp for use as an id.
 
 	Currently SHA1 hashing is used.  It should be plenty for our purposes.
 
 	"""
-	return hashlib.sha1((text + str(time.time())).encode('utf-8')).hexdigest()
+	return hashlib.sha1((text + str(time.time())).encode("utf-8")).hexdigest()
 
 def _markdown(text):
 	"""Return a task with parsed basic string formatting.
@@ -60,17 +59,17 @@ def _task_from_taskline(taskline):
 	and other metadata will be generated when the line is read.  This is
 	supported to enable editing of the taskfile with a simple text editor.
 	"""
-	if taskline.strip().startswith('#'):
+	if taskline.strip().startswith("#"):
 		return None
-	elif '|' in taskline:
-		text, _, meta = taskline.rpartition('|')
-		task = { 'text': text.strip() }
-		for piece in meta.strip().split(','):
-			label, data = piece.split(':')
+	elif "|" in taskline:
+		text, _, meta = taskline.rpartition("|")
+		task = { "text": text.strip() }
+		for piece in meta.strip().split(","):
+			label, data = piece.split(":")
 			task[label.strip()] = data.strip()
 	else:
 		text = taskline.strip()
-		task = { 'id': _hash(text), 'text': text }
+		task = { "id": _hash(text), "text": text }
 	return task
 
 def _tasklines_from_tasks(tasks):
@@ -79,9 +78,9 @@ def _tasklines_from_tasks(tasks):
 	tasklines = []
 
 	for task in tasks:
-		meta = [m for m in task.items() if m[0] != 'text']
-		meta_str = ', '.join('%s:%s' % m for m in meta)
-		tasklines.append('%s | %s\n' % (task['text'], meta_str))
+		meta = [m for m in task.items() if m[0] != "text"]
+		meta_str = ', '.join("%s:%s" % m for m in meta)
+		tasklines.append("%s | %s\n" % (task["text"], meta_str))
 
 	return tasklines
 
@@ -97,7 +96,7 @@ def _prefixes(ids):
 	ps = {}
 	for id in ids:
 		id_len = len(id)
-		for i in range(1, id_len+1):
+		for i in range(1, id_len + 1):
 			# identifies an empty prefix slot, or a singular collision
 			prefix = id[:i]
 			if (not prefix in ps) or (ps[prefix] and prefix != ps[prefix]):
@@ -105,7 +104,7 @@ def _prefixes(ids):
 		if prefix in ps:
 			# if there is a collision
 			other_id = ps[prefix]
-			for j in range(i, id_len+1):
+			for j in range(i, id_len + 1):
 				if other_id[:j] == id[:j]:
 					ps[id[:j]] = ''
 				else:
@@ -113,14 +112,14 @@ def _prefixes(ids):
 					ps[id[:j]] = id
 					break
 			else:
-				ps[other_id[:id_len+1]] = other_id
+				ps[other_id[:id_len + 1]] = other_id
 				ps[id] = id
 		else:
 			# no collision, can safely add
 			ps[prefix] = id
 	ps = dict(zip(ps.values(), ps.keys()))
-	if '' in ps:
-		del ps['']
+	if "" in ps:
+		del ps[""]
 	return ps
 
 class TaskDict(object):
@@ -130,24 +129,24 @@ class TaskDict(object):
 	can be written back out to disk with the write() function.
 
 	"""
-	def __init__(self, taskdir='.', name='tasks'):
+	def __init__(self, taskdir = ".", name = "tasks"):
 		"""Initialize by reading the task files, if they exist."""
 		self.tasks = {}
 		self.done = {}
 		self.name = name
 		self.taskdir = taskdir
-		filemap = (('tasks', self.name), ('done', '.%s.done' % self.name))
+		filemap = (("tasks", self.name), ("done", ".%s.done" % self.name))
 		for kind, filename in filemap:
 			path = os.path.join(os.path.expanduser(self.taskdir), filename)
 			if os.path.isdir(path):
 				raise InvalidTaskfile
 			if os.path.exists(path):
-				with open(path, 'r') as tfile:
+				with open(path, "r") as tfile:
 					tls = [tl.strip() for tl in tfile if tl]
 					tasks = map(_task_from_taskline, tls)
 					for task in tasks:
 						if task is not None:
-							getattr(self, kind)[task['id']] = task
+							getattr(self, kind)[task["id"]] = task
 
 	def __getitem__(self, prefix):
 		"""Return the unfinished task with the given prefix.
@@ -173,7 +172,7 @@ class TaskDict(object):
 	def add_task(self, text):
 		"""Add a new, unfinished task with the given summary text."""
 		task_id = _hash(text)
-		self.tasks[task_id] = {'id': task_id, 'text': text}
+		self.tasks[task_id] = {"id": task_id, "text": text}
 
 	def edit_task(self, prefix, text):
 		"""Edit the task with the given prefix.
@@ -188,7 +187,7 @@ class TaskDict(object):
 		if text.startswith('s/') or text.startswith('/'):
 			text = re.sub('^s?/', '', text).rstrip('/')
 			find, _, repl = text.partition('/')
-			text = re.sub(find, repl, task['text'])
+			text = re.sub(find, repl, task["text"])
 
 		task['text'] = text
 
@@ -200,8 +199,8 @@ class TaskDict(object):
 		be raised.
 
         """
-		task = self.tasks.pop(self[prefix]['id'])
-		self.done[task['id']] = task
+		task = self.tasks.pop(self[prefix]["id"])
+		self.done[task["id"]] = task
 
 	def remove_task(self, prefix):
 		"""Remove the task from tasks list.
@@ -213,10 +212,10 @@ class TaskDict(object):
 		"""
 		self.tasks.pop(self[prefix]['id'])
 
-	def print_list(self, kind='tasks', verbose=False, quiet=False, grep='', markdown=False):
+	def print_list(self, kind = "tasks", verbose = False, quiet = False, grep="", markdown = False):
 		"""Print out a nicely formatted list of unfinished tasks."""
 		tasks = dict(getattr(self, kind).items())
-		label = 'prefix' if not verbose else 'id'
+		label = "prefix" if not verbose else "id"
 
 		if not verbose:
 			for task_id, prefix in _prefixes(tasks).items():
@@ -231,7 +230,7 @@ class TaskDict(object):
 				else:
 					print(p + task['text'])
 
-	def write(self, delete_if_empty=False):
+	def write(self, delete_if_empty = False):
 		"""Flush the finished and unfinished tasks to the files on disk."""
 		filemap = (('tasks', self.name), ('done', '.%s.done' % self.name))
 		for kind, filename in filemap:
@@ -295,13 +294,13 @@ def _main():
 			td.add_task(text)
 			td.write(options.delete)
 		else:
-			kind = 'tasks' if not options.done else 'done'
-			td.print_list(kind=kind, verbose=options.verbose, quiet=options.quiet, grep=options.grep, markdown=options.markdown)
+			kind = "tasks" if not options.done else "done"
+			td.print_list(kind = kind, verbose = options.verbose, quiet = options.quiet, grep = options.grep, markdown = options.markdown)
 	except AmbiguousPrefix as e:
 		sys.stderr.write('The ID "%s" matches more than one task.\n' % e.prefix)
 	except UnknownPrefix as e:
 		sys.stderr.write('The ID "%s" does not match any task.\n' % e.prefix)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	_main()
