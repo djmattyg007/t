@@ -32,6 +32,17 @@ def _hash(text):
 	"""
 	return hashlib.sha1(text.encode('utf-8')).hexdigest()
 
+def _markdown(text):
+	"""Return a task with parsed basic string formatting.
+
+	The input is a string that may include the following options:
+
+		_example_ := Underlined text
+	"""
+	text = re.sub(r"([^\\]|^)(\*\*)(([^**\\]|[\\].)*)([^\\])(\*\*)", r"\1\033[1m\3\5\033[22m", text)
+	text = re.sub(r"([^\\]|^)(__)(([^__\\]|[\\].)*)([^\\])(__)", r"\1\033[4m\3\5\033[24m", text)
+	return text
+
 def _task_from_taskline(taskline):
 	"""Parse a taskline (from a task file) and return a task.
 
@@ -202,8 +213,7 @@ class TaskDict(object):
 		"""
 		self.tasks.pop(self[prefix]['id'])
 
-
-	def print_list(self, kind='tasks', verbose=False, quiet=False, grep=''):
+	def print_list(self, kind='tasks', verbose=False, quiet=False, grep='', markdown=False):
 		"""Print out a nicely formatted list of unfinished tasks."""
 		tasks = dict(getattr(self, kind).items())
 		label = 'prefix' if not verbose else 'id'
@@ -216,7 +226,10 @@ class TaskDict(object):
 		for _, task in sorted(tasks.items()):
 			if grep.lower() in task['text'].lower():
 				p = '%s - ' % task[label].ljust(plen) if not quiet else ''
-				print(p + task['text'])
+				if markdown:
+					print(p + _markdown(task['text']))
+				else:
+					print(p + task['text'])
 
 	def write(self, delete_if_empty=False):
 		"""Flush the finished and unfinished tasks to the files on disk."""
@@ -249,6 +262,7 @@ def _build_parser():
 	config.add_option("-l", "--list", dest="name", default="tasks", help="work on LIST", metavar="LIST")
 	config.add_option("-t", "--task-dir", dest="taskdir", default="", help="work on the lists in DIR", metavar="DIR")
 	config.add_option("-d", "--delete-if-empty", action="store_true", dest="delete", default=False, help="delete the task file if it becomes empty")
+	config.add_option("-m", "--markdown", action="store_true", dest="markdown", default=False, help="styles each task according to basic markdown")
 	parser.add_option_group(config)
 
 	output = OptionGroup(parser, "Output Options")
@@ -282,7 +296,7 @@ def _main():
 			td.write(options.delete)
 		else:
 			kind = 'tasks' if not options.done else 'done'
-			td.print_list(kind=kind, verbose=options.verbose, quiet=options.quiet, grep=options.grep)
+			td.print_list(kind=kind, verbose=options.verbose, quiet=options.quiet, grep=options.grep, markdown=options.markdown)
 	except AmbiguousPrefix as e:
 		sys.stderr.write('The ID "%s" matches more than one task.\n' % e.prefix)
 	except UnknownPrefix as e:
