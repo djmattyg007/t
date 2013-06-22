@@ -67,7 +67,7 @@ a merge conflict because the list is sorted.
 Installing t
 ------------
 
-`t` requires [Python][] 2.5 or newer, and some form of UNIX-like shell (bash
+`t` requires [Python][] 3.0 or newer, and some form of UNIX-like shell (bash
 works well).  It works on Linux, OS X, and Windows (with [Cygwin][]).
 
 [Python]: http://python.org/
@@ -75,8 +75,8 @@ works well).  It works on Linux, OS X, and Windows (with [Cygwin][]).
 
 Installing and setting up `t` will take about one minute.
 
-First, [download][] the newest version or clone the Mercurial repository
-(`hg clone http://bitbucket.org/sjl/t/`).  Put it anywhere you like.
+First, clone the git repository
+(`git clone git@github.com/djmattyg007/t`).  Put it anywhere you like.
 
 [download]: http://bitbucket.org/sjl/t/get/tip.zip
 
