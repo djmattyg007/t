@@ -76,9 +76,7 @@ works well).  It works on Linux, OS X, and Windows (with [Cygwin][]).
 Installing and setting up `t` will take about one minute.
 
 First, clone the git repository
-(`git clone git@github.com/djmattyg007/t`).  Put it anywhere you like.
-
-[download]: http://bitbucket.org/sjl/t/get/tip.zip
+(`git clone git://github.com/djmattyg007/t.git`).  Put it anywhere you like.
 
 Next, decide where you want to keep your todo lists.  I put mine in `~/tasks`.
 Create that directory:
