@@ -1,0 +1,6 @@
+*.pyc
+tags
+build
+dist
+t.egg-info
+*.un~
