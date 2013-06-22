@@ -29,7 +29,7 @@ a couple of them.
 extremely effective at the one thing it does.  With `t` the only way to make
 your todo list prettier is to **finish some damn tasks**.
 
-[j]: http://github.com/rupa/j2/
+[j]: https://github.com/rupa/j2/
 
 ### It's Flexible
 
@@ -210,8 +210,8 @@ Even people without `t` installed can view the bug list, because it's plain text
 Problems, Contributions, Etc
 ----------------------------
 
-`t` was hacked together in a couple of nights to fit my needs.  If you use it
-and find a bug, please let me know.
+`t` was hacked together in a couple of nights by sjl fit their needs.  If you use
+it and find a bug, please let me know.
 
 If you want to request a feature feel free, but remember that `t` is meant to
 be simple.  If you need anything beyond the basics you might want to look at
@@ -219,8 +219,6 @@ be simple.  If you need anything beyond the basics you might want to look at
 bells and whistles.
 
 If you want to contribute code to `t`, that's great!  Fork the
-[Mercurial repository][] on BitBucket or the [git mirror][] on GitHub and send me
-a pull request.
+[git repository][] on GitHub and send me a pull request.
 
-[Mercurial repository]: http://bitbucket.org/sjl/t/
-[git mirror]: http://github.com/sjl/t/
+[git repository]: https://github.com/djmattyg007/t/
