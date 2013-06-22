@@ -2,7 +2,7 @@
 
 """t is for people that want do things, not organize their tasks."""
 
-import os, re, sys, hashlib
+import os, re, sys, hashlib, time
 from operator import itemgetter
 from optparse import OptionParser, OptionGroup
 
@@ -25,12 +25,12 @@ class UnknownPrefix(Exception):
 
 
 def _hash(text):
-	"""Return a hash of the given text for use as an id.
+	"""Return a hash of the given text combined with a timestamp for use as an id.
 
 	Currently SHA1 hashing is used.  It should be plenty for our purposes.
 
 	"""
-	return hashlib.sha1(text.encode('utf-8')).hexdigest()
+	return hashlib.sha1((text + str(time.time())).encode('utf-8')).hexdigest()
 
 def _markdown(text):
 	"""Return a task with parsed basic string formatting.
